@@ -10,20 +10,63 @@
   </head>
   <body>
 
-    <ul id="messages"></ul>
-    <form id="chatbox">
-      <textarea></textarea>
-      <input type="submit" value="Send" />
-    </form>
+    <div id="name-input-div">
+    Enter Name : 
+    <form id="nameinput">
+        <textarea></textarea>
+        <input type="submit" value="Submit" />
+      </form>
+    </div>
+
+    <div id="message-box-div">
+      <span id="user-name"></span>
+      <div>
+        Send New Message
+        <form id="chatbox">
+          <textarea></textarea>
+          <input type="submit" value="Send" />
+        </form>
+      </div>
+      Chat Room Messages : 
+      <ul id="messages"></ul>
+    </div>
+
 
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <script>
 
+      console.log("New Load")
+
+      var socket = null;
+      var nameInputDiv = document.getElementById("name-input-div");
+      var messageBoxDiv = document.getElementById("message-box-div");
+      var msgBox = $("#chatbox textarea");
+      var nameBox = $("#nameinput textarea");
+      var messages = $("#messages");
+      var username = "";
+      messageBoxDiv.style.display = "none";
+
+
       $(function(){
 
-        var socket = null;
-        var msgBox = $("#chatbox textarea");
-        var messages = $("#messages");
+
+    
+        $("#nameinput").submit(function(event){
+            console.log("nameBox : ", nameBox.val())
+            
+            if (nameBox.val() !== null){
+              console.log("Hiding name box, showing message input box")
+              document.getElementById("user-name").innerHTML = "Name : " + nameBox.val();
+              username = nameBox.val();
+              nameInputDiv.style.display = "none";
+              messageBoxDiv.style.display = "block";
+            }
+            
+            event.preventDefault(); 
+
+        })
+
+
 
         $("#chatbox").submit(function(){
 
@@ -32,19 +75,24 @@
             alert("Error: There is no socket connection.");
             return false;
           }
-
-          socket.send(msgBox.val());
+          
+          var new_message = username + " : " + msgBox.val();
+          socket.send(new_message);
           msgBox.val("");
           return false;
 
+          event.preventDefault(); 
+
         });
 
+        
         if (!window["WebSocket"]) {
           alert("Error: Your browser does not support web sockets.")
         } else {
           socket = new WebSocket("ws://{{.Host}}/room");
           socket.onclose = function() {
-            alert("Connection has been closed.");
+            console.log("Connection has been closed.")
+            //alert("Connection has been closed.");
           }
           socket.onmessage = function(e) {
             messages.append($("<li>").text(e.data));
