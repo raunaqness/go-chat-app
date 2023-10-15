@@ -43,11 +43,11 @@ func (r *room) run() {
 }
 
 const (
-	sockerBufferSize  = 1024
-	messageBufferSize = 256
+	ReadBufferSize  = 1024
+	WriteBufferSize = 1024
 )
 
-var upgrader = &websocket.Upgrader{ReadBufferSize: sockerBufferSize, WriteBufferSize: sockerBufferSize}
+var upgrader = &websocket.Upgrader{ReadBufferSize: ReadBufferSize, WriteBufferSize: WriteBufferSize}
 
 func (r *room) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	socket, err := upgrader.Upgrade(w, req, nil)
@@ -58,7 +58,7 @@ func (r *room) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 
 	client := &client{
 		socket:  socket,
-		receive: make(chan []byte, messageBufferSize),
+		receive: make(chan []byte, WriteBufferSize),
 		room:    r,
 	}
 

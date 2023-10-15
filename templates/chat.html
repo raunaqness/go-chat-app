@@ -1,6 +1,6 @@
 <html>
   <head>
-    <title>Chat</title>
+    <title>Chat app Secure</title>
     <style>
 
       input { display: block; }
@@ -89,7 +89,7 @@
         if (!window["WebSocket"]) {
           alert("Error: Your browser does not support web sockets.")
         } else {
-          socket = new WebSocket("ws://{{.Host}}/room");
+          socket = new WebSocket("wss://{{.Host}}/room");
           socket.onclose = function() {
             console.log("Connection has been closed.")
             //alert("Connection has been closed.");
